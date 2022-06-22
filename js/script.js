@@ -15,6 +15,7 @@ let ctx = cvs.getContext("2d");
 //----------------------------------------------------
 let canvasHight = cvs.clientHeight; //высота канваса
 let canvasWidth = cvs.clientWidth; //шырина канваса
+
 let drawTimer; //таймер игрового потока
 let drawSpeed = 15; //скорость отрисовки в МС (ФПС)
 let xPos; //координаты шара
@@ -27,6 +28,17 @@ let blockSpeed = 10; //скорость перемещения игрового 
 let direction; //направление движения
 let moveRight, moveLeft; //движение игрового блока
 
+//коробка для разбивания 
+let box = [
+    { x: 200, y: 200, width: 100, height: 100, id: 1 },
+    { x: 350, y: 200, width: 100, height: 100, id: 1 },
+    { x: 500, y: 200, width: 100, height: 100, id: 1 },
+    { x: 650, y: 200, width: 100, height: 100, id: 1 },
+    { x: 200, y: 350, width: 100, height: 100, id: 1 },
+    { x: 350, y: 350, width: 100, height: 100, id: 1 },
+    { x: 500, y: 350, width: 100, height: 100, id: 1 },
+    { x: 650, y: 350, width: 100, height: 100, id: 1 }
+];
 
 //движение игрового блока ----------------------------------------------------
 function move() {
@@ -63,7 +75,7 @@ document.addEventListener("keyup", function keyboarddown(e) { //срабатыв
 });
 //--------------------------------------------------------------------------------------------
 
-//функция движения обьекта----------------------------------------
+//функция движения шара----------------------------------------
 function drawFly() {
     switch (direction) {
         case 0:
@@ -106,7 +118,7 @@ function drawFly() {
 };
 //----------------------------------------------------------------------------
 
-//столкновение с краем игрового поля, меняет направление--------------------
+//столкновение с краем игрового поля, меняет направление --------------------
 function change() {
     if (xPos < 10 || xPos > canvasWidth - 10 || yPos < 10 || yPos > canvasHight - 10) {
         switch (direction) {
@@ -141,6 +153,7 @@ function change() {
         }
     }
 }
+
 //столкновение с игровым блоком, меняет направление--------------------
 function check() {
     if (yPos > canvasHight - 20 && xPos > xBlockStart && xPos < xBlockFinish) {
@@ -150,12 +163,56 @@ function check() {
 }
 //---------------------------------------------------------------------------
 
+//столкновение с коробками, меняет направление, убирает блок ------------------------------
+function checkBox() {
+    for (let i = 0; i < box.length; i++) {
+        //колизия столкновение с коробкой
+        if (((xPos + 5 >= box[i].x) && (xPos - 5 <= box[i].x + box[i].width)) && ((yPos + 5 >= box[i].y) && (yPos - 5 <= box[i].y + box[i].height))) {
+            // изменение направления шара
+            switch (direction) {
+                case 0: //вверх
+                    direction = 2; //вниз
+                    break;
+                case 1: //вправо
+                    direction = 3; //влево
+                    break;
+                case 2: //вниз
+                    direction = 0; //вверх
+                    break;
+                case 3: //влево
+                    direction = 1; //вправо
+                    break;
+                case 4: //вправо вверх
+                    if (yPos < box[i].y + box[i].height) direction = 7; //влево вверх
+                    if (yPos > box[i].y + box[i].height) direction = 5; //вправо вни
+                    break;
+                case 5: //вправо вниз
+                    if (yPos < box[i].y) direction = 6; //влево вниз
+                    if (yPos > box[i].y) direction = 4; //вправо вверх
+                    break;
+                case 6: //влево вниз
+                    if (yPos > box[i].y) direction = 5; //вправо вниз
+                    if (yPos < box[i].y) direction = 7; //влево вверх
+                    break;
+                case 7: //влево вверх
+                    if (yPos > box[i].y + box[i].height) direction = 4; //вправо вверх
+                    if (yPos < box[i].y + box[i].height) direction = 6; //влево вниз
+                    break;
+            }
+            //убирает блок с поля
+            box[i].y = - 500;
+            box[i].id = 0; //разбитый блок
+        }
+    }
+}
+//---------------------------------------------------------------------------
+
 //отрисовка кадра (основная функция потока игры)-------------------------------------------
 function draw() {
     ctx.clearRect(0, 0, canvasWidth, canvasHight); //очистить лист
 
     //Отрисовка шара
-    ctx.beginPath() //начало новой фигуры
+    ctx.beginPath(); //начало новой фигуры
     ctx.moveTo(xPos, yPos); //установка начальных координат
     ctx.lineTo(xPos, yPos); //установка координат для рисования
     ctx.strokeStyle = "black"; //цвет
@@ -164,13 +221,23 @@ function draw() {
     ctx.stroke(); //отрисовка фигуры
 
     //Отрисовка игрового блока
-    ctx.beginPath() //начало новой фигуры
+    ctx.beginPath(); //начало новой фигуры
     ctx.moveTo(xBlockStart, yBlock); //установка начальных координат
     ctx.lineTo(xBlockFinish, yBlock); //установка координат для рисования
     ctx.strokeStyle = "black"; //цвет
     ctx.lineWidth = "10"; //толщина блока
     ctx.lineCap = "round"; //форма края
     ctx.stroke(); //отрисовка фигуры
+
+    //Отрисовка коробок для разбивания
+    for (let i = 0; i < box.length; i++) {
+        ctx.beginPath(); //начало новой фигуры
+        ctx.moveTo(box[i].x, box[i].y); //установка начальных координат
+        ctx.strokeStyle = "black"; //цвет
+        ctx.lineWidth = "3"; //толщина лини
+        ctx.lineCap = "round"; //форма края
+        ctx.strokeRect(box[i].x, box[i].y, box[i].width, box[i].height);
+    }
 
     //таймер потока (рекурсия основной функции игры) 
     drawTimer = setTimeout(draw, drawSpeed);
@@ -179,6 +246,8 @@ function draw() {
     loss(); //вылет шара с поля (пропуск)
     change(); //проверка на столкновение с краем игрового поля
     check(); //проверка на столкновение с игровым блоком
+    checkBox(); //проверка на столкновение с ломающимся блоком
+
 }
 //--------------------------------------------------------------------------------------
 

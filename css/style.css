@@ -16,6 +16,28 @@
           justify-content: center;
 }
 
+.row {
+  height: 50px;
+  border: 1px solid black;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  padding: 5px;
+}
+
+.btnStart {
+  border: 1px solid black;
+  padding: 5px;
+  font-size: 20px;
+  font-weight: 700;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  border-radius: 10px;
+}
+
+.btnStart:active {
+  background-color: lime;
+}
+
 #canvas {
   background-position: center;
   border: 1px solid black;

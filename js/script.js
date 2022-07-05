@@ -30,44 +30,7 @@ let moveRight, moveLeft; //движение игрового блока
 let box = []; //коробки для разбивания
 let lvl = 0; //уровень игры
 
-
-
-//движение игрового блока ----------------------------------------------------
-function move() {
-    if (moveRight == true && xBlockFinish < canvasWidth) { //проверка нажатой кнопки и размера игрового поля
-        xBlockStart += blockSpeed; //перемещение блока вправо
-        xBlockFinish += blockSpeed; //перемещение блока вправо
-    }
-    if (moveLeft == true && xBlockStart > 0) { //проверка нажатой кнопки и размера игрового поля
-        xBlockStart -= blockSpeed; //перемещение блока влево
-        xBlockFinish -= blockSpeed; //перемещение блока влево
-    }
-}
-
-//управление клавиатура ------------------------------------------------------------------
-document.addEventListener("keydown", function keyboarddown(e) { //срабатывает при нажатии кнопки
-    switch (e.code) {  // проверка нажатой кнопки
-        case "ArrowRight": //вправо
-            moveRight = true;
-            break;
-        case "ArrowLeft": //влево
-            moveLeft = true;
-            break;
-    }
-});
-document.addEventListener("keyup", function keyboarddown(e) { //срабатывает при отпускании кнопки
-    switch (e.code) {  // проверка отпущеной кнопки
-        case "ArrowRight": //вправо
-            moveRight = false;
-            break;
-        case "ArrowLeft": //влево
-            moveLeft = false;
-            break;
-    }
-});
-//--------------------------------------------------------------------------------------------
-
-//функция движения шара----------------------------------------
+//функция движения шара---------------------------------------------------------------------------
 function drawFly() {
     switch (direction) {
         case 0:
@@ -108,9 +71,59 @@ function drawFly() {
             break;
     }
 };
-//----------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------
 
-//столкновение с краем игрового поля, меняет направление --------------------
+//движение игрового блока ---------------------------------------------------------------
+function move() {
+    if (moveRight == true && xBlockFinish < canvasWidth) { //проверка нажатой кнопки и размера игрового поля
+        xBlockStart += blockSpeed; //перемещение блока вправо
+        xBlockFinish += blockSpeed; //перемещение блока вправо
+    }
+    if (moveLeft == true && xBlockStart > 0) { //проверка нажатой кнопки и размера игрового поля
+        xBlockStart -= blockSpeed; //перемещение блока влево
+        xBlockFinish -= blockSpeed; //перемещение блока влево
+    }
+}
+//--------------------------------------------------------------------------------------------
+
+//управление клавиатура -----------------------------------------------------------------------
+document.addEventListener("keydown", function keyboarddown(e) { //срабатывает при нажатии кнопки
+    switch (e.code) {  // проверка нажатой кнопки
+        case "ArrowRight": //вправо
+            moveRight = true;
+            break;
+        case "ArrowLeft": //влево
+            moveLeft = true;
+            break;
+    }
+});
+document.addEventListener("keyup", function keyboarddown(e) { //срабатывает при отпускании кнопки
+    switch (e.code) {  // проверка отпущеной кнопки
+        case "ArrowRight": //вправо
+            moveRight = false;
+            break;
+        case "ArrowLeft": //влево
+            moveLeft = false;
+            break;
+    }
+});
+//-----------------------------------------------------------------------------------------------
+
+//столкновение с игровым блоком, меняет направление----------------------------------------------
+function check() {
+    if (yPos > canvasHight - 20 && xPos > xBlockStart && xPos < xBlockFinish) {
+        if (direction == 5 && moveLeft == true) direction = 0; //вверх
+        if (direction == 6 && moveRight == true) direction = 0; //вверх
+        if (direction == 2 && moveLeft == true) direction = 7; //влево вверх
+        if (direction == 2 && moveRight == true) direction = 4; //вправо вверх
+        if (direction == 5) direction = 4; //вправо вверх
+        if (direction == 6) direction = 7; //влево вверх
+        if (direction == 2) direction = 0; //вверх
+    }
+}
+//------------------------------------------------------------------------------------------------
+
+//столкновение с краем игрового поля, меняет направление -----------------------------------------
 function change() {
     if (xPos < 10 || xPos > canvasWidth - 10 || yPos < 10 || yPos > canvasHight - 10) {
         switch (direction) {
@@ -145,17 +158,9 @@ function change() {
         }
     }
 }
+//----------------------------------------------------------------------------------------------------
 
-//столкновение с игровым блоком, меняет направление--------------------
-function check() {
-    if (yPos > canvasHight - 20 && xPos > xBlockStart && xPos < xBlockFinish) {
-        if (direction == 5) direction = 4; //вправо вверх
-        if (direction == 6) direction = 7; //влево вверх
-    }
-}
-//---------------------------------------------------------------------------
-
-//столкновение с коробками, меняет направление, убирает блок ------------------------------
+//столкновение с коробками, меняет направление, убирает блок -----------------------------------------
 function checkBox() {
     for (let i = 0; i < box.length; i++) {
         //колизия столкновение с коробкой
@@ -197,9 +202,9 @@ function checkBox() {
         }
     }
 }
-//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------
 
-//отрисовка кадра (основная функция потока игры)-------------------------------------------
+//отрисовка кадра (основная функция потока игры)------------------------------------------------
 function draw() {
     ctx.clearRect(0, 0, canvasWidth, canvasHight); //очистить лист
 
@@ -243,9 +248,9 @@ function draw() {
     loss(); //вылет шара с поля (проиграш)
 
 }
-//--------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------
 
-//вылет шара с поля (проиграш)------------------------------------------------
+//вылет шара с поля (проиграш)--------------------------------------------------------------
 function loss() {
     if (yPos > canvasHight - 10) { //проверка на вылет за пределы поля
         clearTimeout(drawTimer); //остановка потока игры
@@ -256,13 +261,13 @@ function loss() {
     }
 }
 
-//проверка на разбите всеx коробок (победа)-----------------------------------
+//проверка на разбите всеx коробок (победа)----------------------------------------------------
 function win() {
     let checkSUM = 0; //контрольная сумма
-    for(let i = 0; i < box.length; i++){ //подсчитывает сумму ИД всех коробок
-        checkSUM += box[i].id; 
+    for (let i = 0; i < box.length; i++) { //подсчитывает сумму ИД всех коробок
+        checkSUM += box[i].id;
     }
-    if(checkSUM == 0){ //если сумма ИД  всех коробок = 0 коробки разбиты
+    if (checkSUM == 0) { //если сумма ИД  всех коробок = 0 коробки разбиты
         clearTimeout(drawTimer); //остановка потока игры
         ctx.clearRect(0, 0, canvasWidth, canvasHight); //очистить лист
         ctx.fillStyle = 'rgb(0, 255, 0)';
@@ -270,7 +275,7 @@ function win() {
         ctx.fillText("You win", canvasWidth / 2 - 80, canvasHight / 2); //текст вы выиграли
     }
 }
-//-----------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------
 
 //функция старта игры------------------------------------------------------------------------
 document.querySelector(".btnStart").addEventListener("click", () => {
@@ -295,14 +300,22 @@ document.querySelector(".btnStart").addEventListener("click", () => {
 function changeLVL() {
     if (lvl == 1) {
         box = [ // установка массив коробок для разбивания
-            { x: 200, y: 200, width: 100, height: 100, id: 1 },
-            { x: 350, y: 200, width: 100, height: 100, id: 1 },
-            { x: 500, y: 200, width: 100, height: 100, id: 1 },
-            { x: 650, y: 200, width: 100, height: 100, id: 1 },
-            { x: 200, y: 350, width: 100, height: 100, id: 1 },
-            { x: 350, y: 350, width: 100, height: 100, id: 1 },
-            { x: 500, y: 350, width: 100, height: 100, id: 1 },
-            { x: 650, y: 350, width: 100, height: 100, id: 1 }
+            { x: (canvasWidth * 0.1), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.3), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.5), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.7), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.1), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.3), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.5), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.7), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.2), y: 300, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.4), y: 300, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.6), y: 300, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.8), y: 300, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.2), y: 400, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.4), y: 400, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.6), y: 400, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.8), y: 400, width: (canvasWidth * 0.1), height: 30, id: 1 }
         ];
     }
 }

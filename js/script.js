@@ -236,14 +236,15 @@ function draw() {
         ctx.strokeRect(box[i].x, box[i].y, box[i].width, box[i].height);
     }
 
-    //таймер потока (рекурсия основной функции игры) 
-    drawTimer = setTimeout(draw, drawSpeed);
-
     drawFly(); //функция движения обьекта
     move(); //движение игровго блока
     change(); //проверка на столкновение с краем игрового поля
     check(); //проверка на столкновение с игровым блоком
     checkBox(); //проверка на столкновение с ломающимся блоком
+
+    //таймер потока (рекурсия основной функции игры) 
+    drawTimer = setTimeout(draw, drawSpeed);
+
     win(); //проверка на разбите всеx коробок (победа)
     loss(); //вылет шара с поля (проиграш)
 
@@ -255,30 +256,43 @@ function loss() {
     if (yPos > canvasHight - 10) { //проверка на вылет за пределы поля
         clearTimeout(drawTimer); //остановка потока игры
         ctx.clearRect(0, 0, canvasWidth, canvasHight); //очистить лист
-        ctx.fillStyle = 'rgb(255, 0, 0)';
-        ctx.font = `35px Verdana`;
-        ctx.fillText("You lost", canvasWidth / 2 - 80, canvasHight / 2); //текс вы проиграли
+        ctx.fillStyle = 'rgb(255, 0, 0)'; //цвет строки
+        ctx.font = `35px Verdana`; //шрифт строки
+        ctx.fillText("You lost", canvasWidth / 2 - 80, canvasHight / 2); //текст вы проиграли
     }
 }
+//--------------------------------------------------------------------------------------------
 
 //проверка на разбите всеx коробок (победа)----------------------------------------------------
 function win() {
     let checkSUM = 0; //контрольная сумма
     for (let i = 0; i < box.length; i++) { //подсчитывает сумму ИД всех коробок
-        checkSUM += box[i].id;
+        checkSUM += box[i].id; //прибавляет ид коробки к общей сумме
     }
     if (checkSUM == 0) { //если сумма ИД  всех коробок = 0 коробки разбиты
         clearTimeout(drawTimer); //остановка потока игры
+
         ctx.clearRect(0, 0, canvasWidth, canvasHight); //очистить лист
-        ctx.fillStyle = 'rgb(0, 255, 0)';
-        ctx.font = `35px Verdana`;
+        ctx.fillStyle = 'rgb(0, 255, 0)'; //цвет строки
+        ctx.font = `35px Verdana`; //шрифт строки
         ctx.fillText("You win", canvasWidth / 2 - 80, canvasHight / 2); //текст вы выиграли
+
+        lvl++; //повышаем уровень игры 
+        changeLVL(); //установки уровня
+        setTimeout(startGame, 1500); //начало нового потока игры c задержкой 1.5сек
+        
     }
 }
 //--------------------------------------------------------------------------------------------
 
 //функция старта игры------------------------------------------------------------------------
-document.querySelector(".btnStart").addEventListener("click", () => {
+document.querySelector(".btnStart").addEventListener("click", () => { //кнопка старт
+    lvl = 1; //уровень игры
+    speed = 5; //скорость движения шара
+    startGame(); //старт игры
+});
+
+function startGame() {
     clearTimeout(drawTimer); //останавливает поток текущей игры
     //сброс всех переменных к базовым значениям
     xPos = canvasWidth / 2; // стартовые координаты обьекта шара
@@ -287,31 +301,69 @@ document.querySelector(".btnStart").addEventListener("click", () => {
     xBlockFinish = canvasWidth / 2 + 50;; //координаты игрового блока
     yBlock = canvasHight - 5; //координаты игрового блока
     direction = Math.floor(4 * Math.random() + 4); //случайное направление движения 4-7
-    speed = 5; //скорость движения шара
-    lvl = 1; //уровень игры
     changeLVL(); //установки текущего уровня
     //Запуск основного потока игры
-    draw();
-});
+    draw(); //отрисовка кадра
+}
 
 //----------------------------------------------------------------------------------------
 
 //установки уровня------------------------------------------------------------------------
 function changeLVL() {
     if (lvl == 1) {
+        speed = 5; //скорость движения шара
         box = [ // установка массив коробок для разбивания
             { x: (canvasWidth * 0.1), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
             { x: (canvasWidth * 0.3), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
             { x: (canvasWidth * 0.5), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
             { x: (canvasWidth * 0.7), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
-            { x: (canvasWidth * 0.1), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
-            { x: (canvasWidth * 0.3), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
-            { x: (canvasWidth * 0.5), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
-            { x: (canvasWidth * 0.7), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
-            { x: (canvasWidth * 0.2), y: 300, width: (canvasWidth * 0.1), height: 30, id: 1 },
-            { x: (canvasWidth * 0.4), y: 300, width: (canvasWidth * 0.1), height: 30, id: 1 },
-            { x: (canvasWidth * 0.6), y: 300, width: (canvasWidth * 0.1), height: 30, id: 1 },
-            { x: (canvasWidth * 0.8), y: 300, width: (canvasWidth * 0.1), height: 30, id: 1 },
+        ];
+    }
+    if (lvl == 2) {
+        speed = 6; //скорость движения шара
+        box = [ // установка массив коробок для разбивания
+            { x: (canvasWidth * 0.1), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.3), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.5), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.7), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.2), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.4), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.6), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.8), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
+        ];
+    }
+    if (lvl == 3) {
+        speed = 7; //скорость движения шара
+        box = [ // установка массив коробок для разбивания
+            { x: (canvasWidth * 0.1), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.3), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.5), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.7), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.2), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.4), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.6), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.8), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.1), y: 300, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.3), y: 300, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.5), y: 300, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.7), y: 300, width: (canvasWidth * 0.1), height: 30, id: 1 },
+        ];
+    }
+    if (lvl == 4) {
+        speed = 8; //скорость движения шара
+        box = [ // установка массив коробок для разбивания
+            { x: (canvasWidth * 0.1), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.3), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.5), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.7), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.2), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.4), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.6), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.8), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.1), y: 300, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.3), y: 300, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.5), y: 300, width: (canvasWidth * 0.1), height: 30, id: 1 },
+            { x: (canvasWidth * 0.7), y: 300, width: (canvasWidth * 0.1), height: 30, id: 1 },
             { x: (canvasWidth * 0.2), y: 400, width: (canvasWidth * 0.1), height: 30, id: 1 },
             { x: (canvasWidth * 0.4), y: 400, width: (canvasWidth * 0.1), height: 30, id: 1 },
             { x: (canvasWidth * 0.6), y: 400, width: (canvasWidth * 0.1), height: 30, id: 1 },

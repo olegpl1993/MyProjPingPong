@@ -84,6 +84,23 @@ function move() {
         xBlockFinish -= blockSpeed; //перемещение блока влево
     }
 }
+
+//экранное сенсорное управление-----------------------------------------------------------------------
+document.querySelector(".canvasBox").addEventListener("touchstart", (e) => { //при нажатии на сенсор
+  let x = e.changedTouches[0].clientX; //отслеживает координаты
+  if (x < cWidth / 2) { //проверка направление движения
+      moveLeft = true;
+  }
+  if (x > cWidth / 2) { //проверка направление движения
+      moveRight = true;
+  }
+});
+cvs.addEventListener("touchend", () => {  //при отпуске сенсора
+  //сброс направления движения
+  moveRight = false;
+  moveLeft = false;
+});
+
 //--------------------------------------------------------------------------------------------
 
 //управление клавиатура -----------------------------------------------------------------------
@@ -320,7 +337,7 @@ function changeLVL() {
         ];
     }
     if (lvl == 2) {
-        speed = 6; //скорость движения шара
+        speed = 5; //скорость движения шара
         box = [ // установка массив коробок для разбивания
             { x: (canvasWidth * 0.1), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
             { x: (canvasWidth * 0.3), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
@@ -333,7 +350,7 @@ function changeLVL() {
         ];
     }
     if (lvl == 3) {
-        speed = 7; //скорость движения шара
+        speed = 5; //скорость движения шара
         box = [ // установка массив коробок для разбивания
             { x: (canvasWidth * 0.1), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
             { x: (canvasWidth * 0.3), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
@@ -350,7 +367,7 @@ function changeLVL() {
         ];
     }
     if (lvl == 4) {
-        speed = 8; //скорость движения шара
+        speed = 6; //скорость движения шара
         box = [ // установка массив коробок для разбивания
             { x: (canvasWidth * 0.1), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
             { x: (canvasWidth * 0.3), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
@@ -370,5 +387,30 @@ function changeLVL() {
             { x: (canvasWidth * 0.8), y: 400, width: (canvasWidth * 0.1), height: 30, id: 1 }
         ];
     }
+    if (lvl == 5) {
+      speed = 6; //скорость движения шара
+      box = [ // установка массив коробок для разбивания
+          { x: (canvasWidth * 0.1), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
+          { x: (canvasWidth * 0.3), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
+          { x: (canvasWidth * 0.5), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
+          { x: (canvasWidth * 0.7), y: 100, width: (canvasWidth * 0.1), height: 30, id: 1 },
+          { x: (canvasWidth * 0.2), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
+          { x: (canvasWidth * 0.4), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
+          { x: (canvasWidth * 0.6), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
+          { x: (canvasWidth * 0.8), y: 200, width: (canvasWidth * 0.1), height: 30, id: 1 },
+          { x: (canvasWidth * 0.1), y: 300, width: (canvasWidth * 0.1), height: 30, id: 1 },
+          { x: (canvasWidth * 0.3), y: 300, width: (canvasWidth * 0.1), height: 30, id: 1 },
+          { x: (canvasWidth * 0.5), y: 300, width: (canvasWidth * 0.1), height: 30, id: 1 },
+          { x: (canvasWidth * 0.7), y: 300, width: (canvasWidth * 0.1), height: 30, id: 1 },
+          { x: (canvasWidth * 0.2), y: 400, width: (canvasWidth * 0.1), height: 30, id: 1 },
+          { x: (canvasWidth * 0.4), y: 400, width: (canvasWidth * 0.1), height: 30, id: 1 },
+          { x: (canvasWidth * 0.6), y: 400, width: (canvasWidth * 0.1), height: 30, id: 1 },
+          { x: (canvasWidth * 0.8), y: 400, width: (canvasWidth * 0.1), height: 30, id: 1 },
+          { x: (canvasWidth * 0.1), y: 500, width: (canvasWidth * 0.1), height: 30, id: 1 },
+          { x: (canvasWidth * 0.3), y: 500, width: (canvasWidth * 0.1), height: 30, id: 1 },
+          { x: (canvasWidth * 0.5), y: 500, width: (canvasWidth * 0.1), height: 30, id: 1 },
+          { x: (canvasWidth * 0.7), y: 500, width: (canvasWidth * 0.1), height: 30, id: 1 },
+      ];
+  }
 }
 //---------------------------------------------------------------------------------------

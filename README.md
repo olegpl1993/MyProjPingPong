@@ -1,1 +1,1 @@
-# deploy https://olegpl1993.github.io/MyProjPingPong/
+# deploy: https://olegpl1993.github.io/MyProjPingPong/
